@@ -1,0 +1,2 @@
+nombre:edad:videojuego
+Luis Lopez:23:Call Of Duty
