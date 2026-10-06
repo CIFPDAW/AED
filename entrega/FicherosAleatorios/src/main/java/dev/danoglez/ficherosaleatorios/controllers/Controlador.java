@@ -29,10 +29,11 @@ public class Controlador {
                     + "2. Anadir empleado\n"
                     + "3. Modificar empleado\n"
                     + "4. Buscar empleado por ID\n"
-                    + "5. Salir\n"
+                    + "5. Eliminar empleado por ID\n"
+                    + "6. Salir\n"
                     + "Selecciona una opcion: ");
 
-            if (opcion == null || opcion.trim().equals("5")) {
+            if (opcion == null || opcion.trim().equals("6")) {
                 seguir = false;
             } else if (opcion.trim().equals("1")) {
                 listarEmpleados();
@@ -42,6 +43,8 @@ public class Controlador {
                 modificarEmpleado();
             } else if (opcion.trim().equals("4")) {
                 buscarEmpleado();
+            } else if (opcion.trim().equals("5")) {
+                eliminarEmpleado();
             } else {
                 vista.mostrarTexto("Opcion no valida.");
             }
@@ -131,6 +134,22 @@ public class Controlador {
             }
         } catch (IOException e) {
             vista.mostrarError("No se ha podido buscar: " + e.getMessage());
+        } catch (RuntimeException e) {
+            vista.mostrarError("Datos no validos.");
+        }
+    }
+
+    // Elimina un empleado por su ID (baja logica)
+    private void eliminarEmpleado() {
+        try {
+            int id = Integer.parseInt(vista.pedirTexto("Introduce el ID del empleado: ").trim());
+            if (modelo.eliminar(id)) {
+                vista.mostrarTexto("Empleado eliminado correctamente.");
+            } else {
+                vista.mostrarTexto("No existe un empleado con el ID " + id);
+            }
+        } catch (IOException e) {
+            vista.mostrarError("No se ha podido eliminar: " + e.getMessage());
         } catch (RuntimeException e) {
             vista.mostrarError("Datos no validos.");
         }

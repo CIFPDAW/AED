@@ -61,6 +61,19 @@ public class EmpleadoRepositorio {
         return true;
     }
 
+    // Baja logica: pone id a 0 y deja el hueco libre, como en el ejemplo del tema
+    public boolean eliminar(int id) throws IOException {
+        if (buscarPorId(id) == null) {
+            return false;
+        }
+
+        try (RandomAccessFile raf = new RandomAccessFile(fichero, "rw")) {
+            raf.seek(posicionRegistro(id - 1));
+            escribirRegistro(raf, 0, "", 0, 0.0);
+        }
+        return true;
+    }
+
     // Lista empleados
     public ArrayList<Empleado> listar() throws IOException {
         ArrayList<Empleado> empleados = new ArrayList<>();
