@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gamehub>
+    <videojuegos>
+        <videojuego id="1">
+            <titulo>Hollow Knight</titulo>
+            <plataforma>PC</plataforma>
+            <genero>Metroidvania</genero>
+            <horasJugadas>45.5</horasJugadas>
+            <finalizado>true</finalizado>
+        </videojuego>
+        <videojuego id="2">
+            <titulo>The Legend of Zelda: Breath of the Wild</titulo>
+            <plataforma>Switch</plataforma>
+            <genero>Aventura</genero>
+            <horasJugadas>80.0</horasJugadas>
+            <finalizado>false</finalizado>
+        </videojuego>
+    </videojuegos>
+</gamehub>

@@ -1,24 +1,65 @@
 # GameHub XML – AE1.3 CRUD con fichero XML
 
-Aplicación de consola de **GameHub** para gestionar videojuegos. El CRUD trabaja sobre un `ArrayList` en memoria. El fichero `data/videojuegos.xml` solo se lee o se escribe cuando el usuario lo pide.
+Aplicación de consola para gestionar un catálogo de videojuegos. El CRUD trabaja sobre un `ArrayList` en memoria. El fichero `data/videojuegos.xml` solo se lee al cargar y se escribe al guardar (o al salir, si se confirma).
 
 ---
 
-## 1. Descripción breve
+## 1. Qué hace la aplicación
 
-1. La opción 1 carga el XML a la lista.
-2. Añadir, buscar, listar, modificar y eliminar cambian esa lista.
-3. La opción 7 (o la pregunta al salir) vuelve a escribir el XML.
-4. La opción 8 busca un id directamente en el fichero con XPath, sin usar la lista de memoria.
+El menú se repite hasta que se elige salir.
+
+```text
+==============================
+         GAMEHUB XML
+==============================
+1. Cargar datos desde XML
+2. Anadir videojuego
+3. Buscar videojuego por ID
+4. Mostrar todos los videojuegos
+5. Modificar videojuego
+6. Eliminar videojuego
+7. Guardar cambios en XML
+8. Listar por plataforma
+9. Estadísticas
+0. Salir
+```
+
+1. Lee `data/videojuegos.xml`. Si no existe, lo crea con `<gamehub>` y `<videojuegos>` vacíos e informa de cuántos juegos se han cargado.
+2. Pide los datos y los añade a la lista. No admite un id repetido, un id menor o igual que 0, título, plataforma o género vacíos, ni horas negativas.
+3. Busca ese id en la lista de memoria y muestra el juego, o avisa si no está.
+4. Muestra todos los juegos ordenados por id. Si no hay ninguno, indica que el catálogo está vacío.
+5. Cambia título, plataforma, género, horas, finalizado y valoración. El id no se modifica.
+6. Pide confirmación y, si se acepta, quita el juego de la lista.
+7. Vuelca la lista al XML, en UTF-8 y con sangría.
+8. Pide una plataforma y muestra solo los juegos de esa plataforma. No distingue mayúsculas.
+9. Muestra cuántos juegos hay, cuántos están finalizados y la suma de horas.
+0. Si hay cambios sin guardar, pregunta si se escriben en el XML antes de cerrar.
+
+Alta, modificación y baja marcan cambios pendientes. Cargar y guardar los quitan. El XML no se toca en cada alta.
+
+Cada videojuego guarda `id`, `titulo`, `plataforma`, `genero`, `valoracion`, `horasJugadas` y `finalizado`. La valoración `0` se muestra como `Sin valorar`.
 
 ---
 
-## 2. Estructura (MVC)
+## 2. Cómo está aplicado el MVC
+
+`Main` no contiene el menú ni abre el fichero. Solo crea el servicio, la vista y el controlador:
+
+```java
+public static void main(String[] args) {
+    VideojuegoService servicio = new VideojuegoService();
+
+    try (IVista vista = new VistaTexto()) {
+        Controlador controlador = new Controlador(vista, servicio);
+        controlador.ejecutar();
+    }
+}
+```
 
 ```
 XML/
-├── data/
-│   └── videojuegos.xml
+├── data/videojuegos.xml
+├── capturas/
 ├── src/main/java/dev/danoglez/
 │   ├── Main.java
 │   ├── models/Videojuego.java
@@ -32,106 +73,112 @@ XML/
 └── README.md
 ```
 
-| Capa | Qué hace | Qué no hace |
-|---|---|---|
-| Modelo | Datos del videojuego | Teclado, pantalla, fichero |
-| Vista | Menú y mensajes | Abrir el XML |
-| Controlador | Traduce la opción del menú | `DocumentBuilder` ni `Transformer` |
-| Servicio | Lista en memoria y validaciones | Pedir datos |
-| Repositorio | Lee, crea y guarda el XML. Busca por id con XPath | Conocer el menú |
+| Capa | Clase | Qué hace | Qué no hace |
+|---|---|---|---|
+| Modelo | `Videojuego` | Guarda los datos y el `toString()` | Teclado, pantalla, fichero |
+| Vista | `VistaTexto` | Pinta el menú, pide datos y muestra mensajes | Abrir el XML |
+| Controlador | `Controlador` | Según la opción, pide datos a la vista y llama al servicio | `DocumentBuilder` ni `Transformer` |
+| Servicio | `VideojuegoService` | Lista en memoria, validaciones y `hayCambios` | Pedir datos por teclado |
+| Repositorio | `XMLVideojuegoRepository` | Lee, crea y guarda `data/videojuegos.xml` | Conocer el menú |
+| Excepción | `VideojuegoFileException` | Agrupa los errores de lectura y escritura | |
 
-El `main` solo ensambla las piezas:
+El `id` es un atributo de `<videojuego>`. El resto, incluida `valoracion`, son elementos hijos. La carga recorre los nodos con XPath (`/gamehub/videojuegos/videojuego`). La búsqueda por id del menú recorre el `ArrayList`. Al guardar se reescribe el documento con `Transformer`.
 
-```java
-public static void main(String[] args) {
-    VideojuegoService servicio = new VideojuegoService();
-
-    try (IVista vista = new VistaTexto()) {
-        Controlador controlador = new Controlador(vista, servicio);
-        controlador.ejecutar();
-    }
-}
-```
+Los errores de fichero llegan como `VideojuegoFileException`. Un id repetido o un título vacío llegan como `IllegalArgumentException`. La vista muestra el mensaje. No hay `catch` vacíos.
 
 ---
 
-## 3. XML
+## 3. Dónde está cada cambio de hoy
 
-El `id` es un atributo. El resto son elementos hijos.
+### Valoración
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<gamehub>
-    <videojuegos>
-        <videojuego id="1">
-            <titulo>Hollow Knight</titulo>
-            <plataforma>PC</plataforma>
-            <genero>Metroidvania</genero>
-            <horasJugadas>45.5</horasJugadas>
-            <finalizado>true</finalizado>
-        </videojuego>
-    </videojuegos>
-</gamehub>
-```
+Campo nuevo del videojuego. `0` significa sin valorar.
 
-Si `data/videojuegos.xml` no existe, el repositorio lo crea con `<gamehub>` y `<videojuegos>` vacíos.
+| Dónde | Qué se ha cambiado |
+|---|---|
+| `models/Videojuego.java` | Atributo `valoracion`, constructor, getter, setter y `toString()` |
+| `controllers/Controlador.java` | `anadirVideojuego()` y `modificarVideojuego()` piden el número |
+| `services/VideojuegoService.java` | `modificar(...)` recibe la valoración y llama a `setValoracion` |
+| `repositories/XMLVideojuegoRepository.java` | Al guardar escribe `<valoracion>`. Al leer la recupera con `textoHijo` |
+| `data/videojuegos.xml` | Cada juego lleva el elemento `<valoracion>` |
 
-Al guardar se reescribe el documento entero con `Transformer`, codificación UTF-8 y sangría.
+### Opción 8. Listar por plataforma
 
-La carga y la búsqueda en fichero usan XPath:
+| Dónde | Qué se ha cambiado |
+|---|---|
+| `views/VistaTexto.java` | Línea nueva en `pedirOpcion()` |
+| `controllers/Controlador.java` | `case 8` llama a `listarVideojuegosPorPlataforma()` |
+| `services/VideojuegoService.java` | `buscarPorPlataforma(String)` filtra la lista en memoria |
 
-- `/gamehub/videojuegos/videojuego` para leer todos.
-- `/gamehub/videojuegos/videojuego[@id='X']` para buscar uno.
+La vista pide la plataforma. El servicio compara en mayúsculas y devuelve la lista. El controlador la imprime.
 
-La opción 3 del menú busca en el `ArrayList`, no en el disco. Así se ve la diferencia entre lo que hay en memoria y lo que ya está guardado.
+### Opción 9. Estadísticas
+
+| Dónde | Qué se ha cambiado |
+|---|---|
+| `views/VistaTexto.java` | Línea nueva en `pedirOpcion()` |
+| `controllers/Controlador.java` | `case 9` llama a `stats()`, que muestra el texto del servicio |
+| `services/VideojuegoService.java` | `estadisticas()` recorre la lista y suma juegos, finalizados y horas |
+
+### Menú con `switch`
+
+`Controlador.ejecutar()` ya no encadena `if` / `else`. Cada opción es un `case` y termina con `break`, también el `case 8`. Sin ese `break` la ejecución seguía al `case 0` y el programa se cerraba al listar por plataforma.
 
 ---
 
-## 4. Menú
+## 4. Capturas
 
-```text
-==============================
-         GAMEHUB XML
-==============================
-1. Cargar datos desde XML
-2. Anadir videojuego
-3. Buscar videojuego por ID
-4. Mostrar todos los videojuegos
-5. Modificar videojuego
-6. Eliminar videojuego
-7. Guardar cambios en XML
-8. Buscar por ID en el XML (XPath)
-0. Salir
-```
+Están en `entrega/XML/capturas/`.
 
-Reglas:
+### Menú
 
-- No se repite un id y el id tiene que ser mayor que 0.
-- Título, plataforma y género no pueden ir vacíos.
-- Las horas no pueden ser negativas.
-- Modificar no cambia el id.
-- Eliminar pide confirmación.
-- Si hay cambios sin guardar, cargar y salir preguntan antes de pisarlos.
+![Menú principal](capturas/01-menu.png)
 
-Los errores de fichero salen como `VideojuegoFileException`. Un id repetido o un título vacío salen como `IllegalArgumentException`. La vista muestra el mensaje. No hay `catch` vacíos.
+### Cargar
+
+![Carga desde XML](capturas/02-cargar.png)
+
+### Añadir
+
+![Alta de un videojuego](capturas/03-anadir.png)
+
+### Buscar por id
+
+![Búsqueda por id](capturas/04-buscar-id.png)
+
+### Mostrar todos
+
+![Listado completo](capturas/05-listar.png)
+
+### Modificar
+
+![Modificación](capturas/06-modificar.png)
+
+### Eliminar
+
+![Eliminación](capturas/07-eliminar.png)
+
+### Guardar
+
+![Guardado en XML](capturas/08-guardar.png)
+
+### Listar por plataforma
+
+![Filtro por plataforma](capturas/09-listar-plataforma.png)
+
+### Estadísticas
+
+![Estadísticas](capturas/10-estadisticas.png)
 
 ---
 
 ## 5. Cómo ejecutar
 
-Desde la carpeta `entrega/XML` (la ruta del fichero es `data/videojuegos.xml`):
+Desde `entrega/XML`, porque la ruta del fichero es `data/videojuegos.xml`:
 
 ```bash
 javac -encoding UTF-8 -d target/classes $(find src -name '*.java')
 java -cp target/classes dev.danoglez.Main
 ```
 
-En IntelliJ: abrir el proyecto Maven y ejecutar `dev.danoglez.Main`.
-
-Flujo de prueba:
-
-1. Opción **1** y luego **4**: carga y listado.
-2. Opción **2**: alta en memoria.
-3. Opción **8**: ese alta todavía no está en el fichero.
-4. Opción **7**: guardar.
-5. Opción **0**: si no quedan cambios, sale directo.
+En IntelliJ, ejecutar `dev.danoglez.Main`.

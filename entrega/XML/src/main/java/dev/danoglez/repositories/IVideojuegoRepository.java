@@ -13,6 +13,4 @@ public interface IVideojuegoRepository {
     List<Videojuego> cargar() throws VideojuegoFileException;
 
     void guardar(List<Videojuego> videojuegos) throws VideojuegoFileException;
-
-    Videojuego buscarPorId(int id) throws VideojuegoFileException;
 }

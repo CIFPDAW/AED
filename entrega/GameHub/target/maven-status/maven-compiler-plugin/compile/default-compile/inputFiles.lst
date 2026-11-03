@@ -1,0 +1,10 @@
+/home/2damb@informatica.edu/NetBeansProjects/GameHub/src/main/java/com/mycompany/gamehub/GameHub.java
+/home/2damb@informatica.edu/NetBeansProjects/GameHub/src/main/java/com/mycompany/gamehub/controller/GameHubController.java
+/home/2damb@informatica.edu/NetBeansProjects/GameHub/src/main/java/com/mycompany/gamehub/exception/GameHubFileException.java
+/home/2damb@informatica.edu/NetBeansProjects/GameHub/src/main/java/com/mycompany/gamehub/model/Game.java
+/home/2damb@informatica.edu/NetBeansProjects/GameHub/src/main/java/com/mycompany/gamehub/repository/BinaryGameHubRepository.java
+/home/2damb@informatica.edu/NetBeansProjects/GameHub/src/main/java/com/mycompany/gamehub/repository/IGameHubRepository.java
+/home/2damb@informatica.edu/NetBeansProjects/GameHub/src/main/java/com/mycompany/gamehub/repository/TextGameHubRepository.java
+/home/2damb@informatica.edu/NetBeansProjects/GameHub/src/main/java/com/mycompany/gamehub/service/GameHubService.java
+/home/2damb@informatica.edu/NetBeansProjects/GameHub/src/main/java/com/mycompany/gamehub/view/GameHubView.java
+/home/2damb@informatica.edu/NetBeansProjects/GameHub/src/main/java/com/mycompany/gamehub/view/IGameHubView.java

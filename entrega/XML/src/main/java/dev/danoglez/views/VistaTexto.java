@@ -99,7 +99,8 @@ public class VistaTexto implements IVista {
         System.out.println("5. Modificar videojuego");
         System.out.println("6. Eliminar videojuego");
         System.out.println("7. Guardar cambios en XML");
-        System.out.println("8. Buscar por ID en el XML (XPath)");
+        System.out.println("8. Listar por plataforma");
+        System.out.println("9. Estadísticas");
         System.out.println("0. Salir");
         return pedirNumero("Seleccione una opcion: ");
     }

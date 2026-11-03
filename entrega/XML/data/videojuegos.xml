@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<gamehub>
+<?xml version="1.0" encoding="UTF-8"?><gamehub>
     <videojuegos>
         <videojuego id="1">
             <titulo>Hollow Knight</titulo>
@@ -7,6 +6,7 @@
             <genero>Metroidvania</genero>
             <horasJugadas>45.5</horasJugadas>
             <finalizado>true</finalizado>
+            <valoracion>9</valoracion>
         </videojuego>
         <videojuego id="2">
             <titulo>The Legend of Zelda: Breath of the Wild</titulo>
@@ -14,6 +14,31 @@
             <genero>Aventura</genero>
             <horasJugadas>80.0</horasJugadas>
             <finalizado>false</finalizado>
+            <valoracion>5</valoracion>
+        </videojuego>
+        <videojuego id="3">
+            <titulo>Dano</titulo>
+            <plataforma>Switch</plataforma>
+            <genero>PlayMobil</genero>
+            <horasJugadas>1234.0</horasJugadas>
+            <finalizado>false</finalizado>
+            <valoracion>7</valoracion>
+        </videojuego>
+        <videojuego id="4">
+            <titulo>Daniel</titulo>
+            <plataforma>PC</plataforma>
+            <genero>Darias</genero>
+            <horasJugadas>8.0</horasJugadas>
+            <finalizado>false</finalizado>
+            <valoracion>6323</valoracion>
+        </videojuego>
+        <videojuego id="6">
+            <titulo>Daniel</titulo>
+            <plataforma>PC</plataforma>
+            <genero>Pruebas</genero>
+            <horasJugadas>932823.0</horasJugadas>
+            <finalizado>true</finalizado>
+            <valoracion>10</valoracion>
         </videojuego>
     </videojuegos>
 </gamehub>

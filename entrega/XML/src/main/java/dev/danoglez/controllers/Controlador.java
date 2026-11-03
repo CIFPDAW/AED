@@ -27,27 +27,41 @@ public class Controlador {
             int opcion = vista.pedirOpcion();
 
             try {
-                if (opcion == 1) {
-                    cargar();
-                } else if (opcion == 2) {
-                    anadirVideojuego();
-                } else if (opcion == 3) {
-                    buscarVideojuego();
-                } else if (opcion == 4) {
-                    listarVideojuegos();
-                } else if (opcion == 5) {
-                    modificarVideojuego();
-                } else if (opcion == 6) {
-                    eliminarVideojuego();
-                } else if (opcion == 7) {
-                    servicio.guardarEnXml();
-                    vista.mostrarTexto("Cambios guardados en el XML.");
-                } else if (opcion == 8) {
-                    buscarEnXml();
-                } else if (opcion == 0) {
-                    salir = confirmarSalida();
-                } else {
-                    vista.mostrarError("Opcion no valida.");
+                switch (opcion) {
+                    case 1:
+                        cargar();
+                        break;
+                    case 2:
+                        anadirVideojuego();
+                        break;
+                    case 3:
+                        buscarVideojuego();
+                        break;
+                    case 4:
+                        listarVideojuegos();
+                        break;
+                    case 5:
+                        modificarVideojuego();
+                        break;
+                    case 6:
+                        eliminarVideojuego();
+                        break;
+                    case 7:
+                        servicio.guardarEnXml();
+                        vista.mostrarTexto("Cambios guardados en el XML.");
+                        break;
+                    case 8:
+                        listarVideojuegosPorPlataforma();
+                        break;
+                    case 9:
+                        stats();
+                        break;
+                    case 0:
+                        salir = confirmarSalida();
+                        break;
+                    default:
+                        vista.mostrarError("Opcion no valida.");
+                        break;
                 }
             } catch (VideojuegoFileException e) {
                 vista.mostrarError(e.getMessage());
@@ -87,9 +101,10 @@ public class Controlador {
         String genero = vista.pedirTexto("Genero: ").trim();
         double horas = vista.pedirDouble("Horas jugadas: ");
         boolean finalizado = vista.pedirBooleano("¿Finalizado? (true/false): ");
+        int valoracion  = vista.pedirNumero("Valoracion: ");
 
         servicio.validarDatos(titulo, plataforma, genero, horas);
-        Videojuego videojuego = new Videojuego(id, titulo, plataforma, genero, horas, finalizado);
+        Videojuego videojuego = new Videojuego(id, titulo, plataforma, genero, horas, finalizado, valoracion);
         servicio.anadir(videojuego);
         vista.mostrarTexto("Videojuego anadido en memoria. El XML se actualiza al guardar.");
     }
@@ -101,16 +116,6 @@ public class Controlador {
             vista.mostrarTexto("No existe ningun videojuego con ese ID.");
         } else {
             vista.mostrarTexto(videojuego.toString());
-        }
-    }
-
-    private void buscarEnXml() throws VideojuegoFileException {
-        int id = vista.pedirNumero("ID a buscar en el fichero XML: ");
-        Videojuego videojuego = servicio.buscarEnXml(id);
-        if (videojuego == null) {
-            vista.mostrarTexto("No hay ningun videojuego con ese ID en el fichero XML.");
-        } else {
-            vista.mostrarTexto("Encontrado en el XML: " + videojuego);
         }
     }
 
@@ -139,8 +144,9 @@ public class Controlador {
         String genero = vista.pedirTexto("Nuevo genero: ").trim();
         double horas = vista.pedirDouble("Nuevas horas jugadas: ");
         boolean finalizado = vista.pedirBooleano("¿Finalizado? (true/false): ");
+        int valoracion  = vista.pedirNumero("Valoracion: ");
 
-        servicio.modificar(id, titulo, plataforma, genero, horas, finalizado);
+        servicio.modificar(id, titulo, plataforma, genero, horas, finalizado, valoracion);
         vista.mostrarTexto("Videojuego modificado en memoria. El XML se actualiza al guardar.");
     }
 
@@ -160,6 +166,22 @@ public class Controlador {
         } else {
             vista.mostrarTexto("Eliminacion cancelada.");
         }
+    }
+
+    private void listarVideojuegosPorPlataforma() {
+        String plataforma = vista.pedirTexto("Introduce la plataforma por la que quieres buscar: ");
+        List<Videojuego> resultados = servicio.buscarPorPlataforma(plataforma.toUpperCase());
+        if (resultados == null || resultados.isEmpty()) {
+            vista.mostrarTexto("No existe ningun videojuego con esa plataforma.");
+        } else {
+            for (Videojuego videojuego : resultados) {
+                vista.mostrarTexto(videojuego.toString());
+            }
+        }
+    }
+
+    private void stats(){
+        vista.mostrarTexto(servicio.estadisticas());
     }
 
     private boolean confirmarSalida() throws VideojuegoFileException {

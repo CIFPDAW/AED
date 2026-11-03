@@ -11,22 +11,26 @@ public class Videojuego {
     private String titulo;
     private String plataforma;
     private String genero;
+    private int valoracion;
     private double horasJugadas;
     private boolean finalizado;
 
     // Constructores
     public Videojuego(int id, String titulo, String plataforma, String genero,
-            double horasJugadas, boolean finalizado) {
+            double horasJugadas, boolean finalizado, int valoracion) {
         assert id > 0 : "El ID debe ser mayor que 0";
         assert titulo != null && !titulo.isBlank() : "El titulo no puede estar vacio";
         assert plataforma != null && !plataforma.isBlank() : "La plataforma no puede estar vacia";
         assert genero != null && !genero.isBlank() : "El genero no puede estar vacio";
+        assert valoracion < 10 && valoracion > 0 : "El valoracion debe ser mayor que 0 y menor que 10";
+        assert valoracion == 0 : "Sin valor";
         assert horasJugadas >= 0 : "Las horas jugadas no pueden ser negativas";
 
         this.id = id;
         this.titulo = titulo;
         this.plataforma = plataforma;
         this.genero = genero;
+        this.valoracion = valoracion;
         this.horasJugadas = horasJugadas;
         this.finalizado = finalizado;
     }
@@ -77,12 +81,27 @@ public class Videojuego {
         this.finalizado = finalizado;
     }
 
+    public int getValoracion() {
+        return valoracion;
+    }
+
+    public void setValoracion(int valoracion) {
+        this.valoracion = valoracion;
+    }
+
     @Override
     public String toString() {
+        String valorar;
+        if(valoracion == 0){
+             valorar = "Sin valorar";
+        }else{
+            valorar = String.valueOf(valoracion);
+        }
         return "Id: " + id
                 + " | Titulo: " + titulo
                 + " | Plataforma: " + plataforma
                 + " | Genero: " + genero
+                + " | Valoracion: " + valorar
                 + " | Horas: " + horasJugadas
                 + " | Finalizado: " + finalizado;
     }

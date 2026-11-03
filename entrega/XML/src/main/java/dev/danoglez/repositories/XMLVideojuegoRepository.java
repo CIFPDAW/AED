@@ -94,6 +94,8 @@ public class XMLVideojuegoRepository implements IVideojuegoRepository {
                         String.valueOf(videojuego.getHorasJugadas())));
                 elemento.appendChild(crearElemento(doc, "finalizado",
                         String.valueOf(videojuego.isFinalizado())));
+                elemento.appendChild(crearElemento(doc, "valoracion",
+                        String.valueOf(videojuego.getValoracion())));
                 contenedor.appendChild(elemento);
             }
 
@@ -102,27 +104,6 @@ public class XMLVideojuegoRepository implements IVideojuegoRepository {
             throw e;
         } catch (Exception e) {
             throw new VideojuegoFileException("No se pudo guardar el fichero XML.", e);
-        }
-    }
-
-    @Override
-    public Videojuego buscarPorId(int id) throws VideojuegoFileException {
-        asegurarXml();
-
-        try {
-            Document doc = leerDocumento();
-            XPath xpath = XPathFactory.newInstance().newXPath();
-            String expresion = "/gamehub/videojuegos/videojuego[@id='" + id + "']";
-            Node nodo = (Node) xpath.evaluate(expresion, doc, XPathConstants.NODE);
-
-            if (nodo == null || nodo.getNodeType() != Node.ELEMENT_NODE) {
-                return null;
-            }
-            return leerVideojuego((Element) nodo);
-        } catch (VideojuegoFileException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new VideojuegoFileException("No se pudo buscar en el fichero XML.", e);
         }
     }
 
@@ -185,13 +166,14 @@ public class XMLVideojuegoRepository implements IVideojuegoRepository {
             String genero = textoHijo(elemento, "genero");
             double horas = Double.parseDouble(textoHijo(elemento, "horasJugadas"));
             boolean finalizado = Boolean.parseBoolean(textoHijo(elemento, "finalizado"));
+            int valoracion = Integer.parseInt(textoHijo(elemento, "valoracion"));
 
             if (id <= 0 || titulo.isBlank() || plataforma.isBlank() || genero.isBlank() || horas < 0) {
                 throw new VideojuegoFileException(
                         "Datos incorrectos en el videojuego con id " + idTexto + ".");
             }
 
-            return new Videojuego(id, titulo, plataforma, genero, horas, finalizado);
+            return new Videojuego(id, titulo, plataforma, genero, horas, finalizado, valoracion);
         } catch (VideojuegoFileException e) {
             throw e;
         } catch (RuntimeException e) {

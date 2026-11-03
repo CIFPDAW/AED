@@ -56,8 +56,15 @@ public class VideojuegoService {
         return null;
     }
 
-    public Videojuego buscarEnXml(int id) throws VideojuegoFileException {
-        return repositorio.buscarPorId(id);
+    public List<Videojuego> buscarPorPlataforma(String plataforma) {
+        List<Videojuego> MismaPlataforma = new ArrayList<>();
+        for (Videojuego videojuego : videojuegos) {
+            if (videojuego.getPlataforma().toUpperCase().equals(plataforma)) {
+                MismaPlataforma.add(videojuego);
+            }
+        }
+
+        return MismaPlataforma;
     }
 
     public List<Videojuego> listar() {
@@ -67,7 +74,7 @@ public class VideojuegoService {
     }
 
     public void modificar(int id, String titulo, String plataforma, String genero,
-            double horasJugadas, boolean finalizado) {
+            double horasJugadas, boolean finalizado, int valoracion) {
         Videojuego videojuego = buscarPorId(id);
         if (videojuego == null) {
             throw new IllegalArgumentException("No existe un videojuego con ese ID.");
@@ -80,7 +87,24 @@ public class VideojuegoService {
         videojuego.setGenero(genero);
         videojuego.setHorasJugadas(horasJugadas);
         videojuego.setFinalizado(finalizado);
+        videojuego.setValoracion(valoracion);
         hayCambios = true;
+    }
+
+    public String estadisticas(){
+        double horasJugadas = 0.0;
+        int finalizados = 0;
+        int juegos = 0;
+
+        for (Videojuego videojuego : videojuegos) {
+            horasJugadas += videojuego.getHorasJugadas();
+            juegos++;
+            if(videojuego.isFinalizado()){
+                finalizados++;
+            }
+        }
+
+        return juegos + " juegos, " + finalizados + " finalizado, " + horasJugadas+ " horas.";
     }
 
     public void eliminar(int id) {
